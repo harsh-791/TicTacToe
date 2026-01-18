@@ -5,8 +5,9 @@ FROM maven:3.9-eclipse-temurin-19 AS build
 # Set working directory
 WORKDIR /app
 
-# Copy pom.xml first for better layer caching
+# Copy pom.xml and checkstyle.xml first for better layer caching
 COPY pom.xml .
+COPY checkstyle.xml .
 
 # Download dependencies (cached layer if pom.xml doesn't change)
 RUN mvn dependency:go-offline -B
@@ -14,8 +15,8 @@ RUN mvn dependency:go-offline -B
 # Copy source code
 COPY src ./src
 
-# Build the application (skip tests in Docker build, tests run in CI)
-RUN mvn clean package -DskipTests -B
+# Build the application (skip tests and checkstyle in Docker build, they run in CI)
+RUN mvn clean package -DskipTests -Dcheckstyle.skip=true -B
 
 # Stage 2: Runtime stage - Minimal JRE image
 FROM eclipse-temurin:19-jre-alpine
