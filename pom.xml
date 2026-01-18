@@ -137,6 +137,10 @@
                     </suppressionFiles>
                     <skipProvidedScope>false</skipProvidedScope>
                     <skipRuntimeScope>false</skipRuntimeScope>
+                    <nvdApiKey>${nvdApiKey}</nvdApiKey>
+                    <nvdApiDelay>6000</nvdApiDelay>
+                    <nvdValidForHours>720</nvdValidForHours>
+                    <cveValidForHours>8760</cveValidForHours>
                 </configuration>
             </plugin>
         </plugins>

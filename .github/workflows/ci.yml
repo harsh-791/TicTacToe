@@ -49,7 +49,15 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
           cache: 'maven'
-      - run: mvn org.owasp:dependency-check-maven:check
+      - name: Run OWASP Dependency Check
+        run: |
+          if [ -n "${{ secrets.NVD_API_KEY }}" ]; then
+            mvn org.owasp:dependency-check-maven:check -DnvdApiKey=${{ secrets.NVD_API_KEY }}
+          else
+            echo "⚠️ NVD_API_KEY not set. Running OWASP check..."
+            echo "Note: Get free API key at https://nvd.nist.gov/developers/request-an-api-key"
+            mvn org.owasp:dependency-check-maven:check
+          fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:
