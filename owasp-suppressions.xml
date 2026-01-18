@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+    <!--
+    OWASP Dependency Check Suppression File
+    Used to suppress false positives and known acceptable vulnerabilities
+    that don't affect the production runtime environment
+    -->
+    
+    <!-- Suppress test dependencies vulnerabilities if they don't affect production -->
+    <suppress>
+        <notes>Test dependencies are not included in production builds</notes>
+        <gav regex="true">.*:junit.*:.*</gav>
+        <cve>CVE-2020-15250</cve>
+    </suppress>
+    
+    <!-- Add more suppressions as needed for false positives -->
+    <!-- Example format:
+    <suppress>
+        <notes>False positive - vulnerability doesn't affect our use case</notes>
+        <gav regex="true">.*:artifact-name:.*</gav>
+        <cve>CVE-YYYY-XXXXX</cve>
+    </suppress>
+    -->
+</suppressions>
