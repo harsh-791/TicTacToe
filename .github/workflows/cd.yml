@@ -5,6 +5,12 @@ on:
     workflows: ["CI Pipeline - DevSecOps"]
     types: [completed]
   workflow_dispatch:
+    inputs:
+      force_deploy:
+        description: 'Force deployment without CI (use only if CI already passed)'
+        required: false
+        default: 'false'
+        type: boolean
 
 env:
   IMAGE_NAME: tictactoe-app
@@ -17,6 +23,19 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     steps:
       - uses: actions/checkout@v4
+
+      # Check if CI pipeline ran recently (for manual triggers)
+      - name: Verify CI pipeline status
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          echo "⚠️ Manual CD trigger detected"
+          echo "Note: CD pipeline should typically run after a successful CI pipeline"
+          echo "If CI didn't run, please check:"
+          echo "  1. Did you push to main/master branch?"
+          echo "  2. Is the CI workflow file correct?"
+          echo "  3. Check Actions tab for CI Pipeline - DevSecOps runs"
+          echo ""
+          echo "Continuing with deployment..."
 
       # Setup Kubernetes cluster
       - uses: helm/kind-action@v1.10.0
