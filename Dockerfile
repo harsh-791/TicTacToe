@@ -45,5 +45,5 @@ USER appuser
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD java -jar app.jar --smoke-test || exit 1
 
-# Default command
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Default command - run in server mode for Kubernetes/container orchestration
+ENTRYPOINT ["java", "-jar", "app.jar", "--server"]

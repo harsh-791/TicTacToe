@@ -21,7 +21,7 @@ spec:
       - name: tictactoe-container
         image: IMAGE_PLACEHOLDER
         imagePullPolicy: IfNotPresent
-        command: ["java", "-jar", "app.jar"]
+        command: ["java", "-jar", "app.jar", "--server"]
         args: []
         resources:
           requests:

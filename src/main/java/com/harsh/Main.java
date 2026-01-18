@@ -18,6 +18,12 @@ public class Main {
             System.exit(0);
         }
 
+        // Check for server mode (for Kubernetes/container orchestration)
+        if (args.length > 0 && "--server".equals(args[0])) {
+            runServerMode();
+            return;
+        }
+
         // Normal game execution
         runNormalGame();
     }
@@ -66,6 +72,30 @@ public class Main {
             System.err.println("Smoke test failed with exception: " + e.getMessage());
             e.printStackTrace();
             System.exit(1);
+        }
+    }
+
+    /**
+     * Server mode - keeps the application running for Kubernetes/container orchestration
+     * This mode allows the container to stay alive and respond to health checks
+     */
+    private static void runServerMode() {
+        System.out.println("TicTacToe Application running in server mode...");
+        System.out.println("Application is ready and waiting for requests.");
+        System.out.println("Use --smoke-test to verify health.");
+        
+        // Keep the application running
+        try {
+            while (true) {
+                Thread.sleep(10000); // Sleep for 10 seconds
+                // Log heartbeat every minute (6 * 10 seconds)
+                if (System.currentTimeMillis() % 60000 < 10000) {
+                    System.out.println("Heartbeat: Application is running...");
+                }
+            }
+        } catch (InterruptedException e) {
+            System.out.println("Server mode interrupted, shutting down...");
+            Thread.currentThread().interrupt();
         }
     }
 
