@@ -50,14 +50,18 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
       - name: Run OWASP Dependency Check
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: |
-          if [ -n "${{ secrets.NVD_API_KEY }}" ]; then
-            mvn org.owasp:dependency-check-maven:check -DnvdApiKey=${{ secrets.NVD_API_KEY }}
-          else
-            echo "⚠️ NVD_API_KEY not set. Running OWASP check..."
-            echo "Note: Get free API key at https://nvd.nist.gov/developers/request-an-api-key"
-            mvn org.owasp:dependency-check-maven:check
+          if [ -z "$NVD_API_KEY" ]; then
+            echo "❌ NVD_API_KEY secret is not set!"
+            echo "Get free API key at: https://nvd.nist.gov/developers/request-an-api-key"
+            echo "Add it as GitHub Secret: Settings → Secrets → Actions → New secret"
+            exit 1
           fi
+          echo "✅ NVD_API_KEY is set"
+          echo "Running OWASP Dependency Check with NVD API key..."
+          mvn org.owasp:dependency-check-maven:check -DnvdApiKey="$NVD_API_KEY" -DnvdApiDelay=8000
       - uses: actions/upload-artifact@v4
         if: always()
         with:
