@@ -59,9 +59,30 @@ jobs:
             echo "Add it as GitHub Secret: Settings → Secrets → Actions → New secret"
             exit 1
           fi
-          echo "✅ NVD_API_KEY is set"
+          echo "✅ NVD_API_KEY is set (length: ${#NVD_API_KEY} characters)"
           echo "Running OWASP Dependency Check with NVD API key..."
-          mvn org.owasp:dependency-check-maven:check -DnvdApiKey="$NVD_API_KEY" -DnvdApiDelay=8000
+          echo "Using API delay: 15000ms (15 seconds) to avoid rate limiting"
+          echo "Attempting with retries..."
+          
+          # Try up to 3 times with increasing delays
+          MAX_RETRIES=3
+          RETRY_COUNT=0
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            if mvn org.owasp:dependency-check-maven:check -DnvdApiKey="$NVD_API_KEY" -DnvdApiDelay=15000; then
+              echo "✅ OWASP check passed!"
+              exit 0
+            else
+              RETRY_COUNT=$((RETRY_COUNT + 1))
+              if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                echo "⚠️ Attempt $RETRY_COUNT failed. Retrying in 30 seconds..."
+                sleep 30
+              else
+                echo "❌ All $MAX_RETRIES attempts failed. This may be due to NVD API rate limiting."
+                echo "The check will fail, but you can re-run the workflow later."
+                exit 1
+              fi
+            fi
+          done
       - uses: actions/upload-artifact@v4
         if: always()
         with:

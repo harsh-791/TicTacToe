@@ -138,9 +138,12 @@
                     <skipProvidedScope>false</skipProvidedScope>
                     <skipRuntimeScope>false</skipRuntimeScope>
                     <nvdApiKey>${nvdApiKey}</nvdApiKey>
-                    <nvdApiDelay>6000</nvdApiDelay>
+                    <nvdApiDelay>15000</nvdApiDelay>
                     <nvdValidForHours>720</nvdValidForHours>
                     <cveValidForHours>8760</cveValidForHours>
+                    <retryCount>5</retryCount>
+                    <nvdMaxRetryCount>10</nvdMaxRetryCount>
+                    <nvdApiValidForHours>24</nvdApiValidForHours>
                 </configuration>
             </plugin>
         </plugins>
