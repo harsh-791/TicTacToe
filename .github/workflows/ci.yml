@@ -107,6 +107,15 @@ jobs:
           push: false
           tags: ${{ env.IMAGE_NAME }}:latest
           load: true
+      - name: Save Docker image
+        run: |
+          docker save ${{ env.IMAGE_NAME }}:latest -o docker-image.tar
+      - name: Upload Docker image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: docker-image.tar
+          retention-days: 1
       - name: Scan container with Trivy
         continue-on-error: true
         uses: aquasecurity/trivy-action@master
@@ -132,6 +141,13 @@ jobs:
     needs: [docker-build-scan]
     steps:
       - uses: actions/checkout@v4
+      - name: Download Docker image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+      - name: Load Docker image
+        run: |
+          docker load -i docker-image.tar
       - name: Run smoke test
         run: |
           docker run --rm ${{ env.IMAGE_NAME }}:latest --smoke-test
