@@ -149,10 +149,10 @@ jobs:
           docker load -i docker-image.tar
       - name: Run smoke test
         run: |
-          docker run --rm ${{ env.IMAGE_NAME }}:latest --smoke-test
+          docker run --rm --entrypoint java ${{ env.IMAGE_NAME }}:latest -jar app.jar --smoke-test
       - name: Verify output
         run: |
-          OUTPUT=$(docker run --rm ${{ env.IMAGE_NAME }}:latest --smoke-test 2>&1)
+          OUTPUT=$(docker run --rm --entrypoint java ${{ env.IMAGE_NAME }}:latest -jar app.jar --smoke-test 2>&1)
           if ! echo "$OUTPUT" | grep -q "APP_OK"; then
             echo "❌ Smoke test failed"
             exit 1
